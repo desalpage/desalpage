@@ -1,0 +1,12 @@
+{
+  "name": "desalpage",
+  "private": true,
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/desalpage/desalpage.git"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
