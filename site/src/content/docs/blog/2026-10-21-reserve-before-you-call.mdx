@@ -100,27 +100,31 @@ Then the admission decision, strict first, with one bounded relaxation:
 
 - If `maxCall` fits in `remaining`, the frame **reserves** it and the call
   runs.
-- If it does not fit but the frame still holds half of it, the frame admits
-  **one relaxed call**, reserved at half — and counts that it did, so a run
-  that leaned on the relaxation is observable rather than indistinguishable
-  from one that never approached its bound.
+- If it does not fit but the frame still holds half of it, the admission is
+  **relaxed**: the call runs, reserved at half — and the frame counts that
+  it did, so a run that leaned on the relaxation is observable rather than
+  indistinguishable from one that never approached its bound.
 - Below that, admission **fails closed**: the turn ends without reaching the
   provider. The refusal is a synthesized message that costs nothing — zero
   usage by construction — and the frame records a `budget` deferral.
 
 The relaxation exists because the worst case is deliberately pessimistic: a
 frame with a real balance left keeps working instead of starving on its own
-conservatism. The overshoot it permits is bounded (at most the unreserved
-half of one call) and reconciled when the frame settles.
+conservatism. It is not a one-time allowance: every admission decision is
+made the same way, and a frame may use the relaxation more than once while
+its balance still holds half of the estimate — each use counted. A relaxed
+call can settle above what it reserved by at most the unreserved half of its
+own estimate, and the shortfall is reconciled when the frame settles.
 
-Delegations are priced the same way, one level up. A grant must meet a floor 
-declared for each type of task, and only ever *raised*,
-never undercut, by the harness' own settled spend history once at least
-three runs back it (self-calibrating pricing deserves its own post). A grant
-below the floor underfunds the child; a grant more than ten times the floor
-is a guess, not a plan. Both are refused — and so is a grant that does not
-fit the manager's `remaining`. A delegation that cannot fund its own worst
-case is refused up front, never discovered on the invoice.
+Delegations are priced the same way, one level up. A grant must meet a
+floor declared for each type of task — and the floor is only ever *raised*,
+never undercut, by the harness's own settled spend history, once at least
+three settled attempts of that task support it (self-calibrating pricing
+deserves its own post). A grant below the floor underfunds the child; a
+grant more than ten times the floor is a guess, not a plan. Both are
+refused — and so is a grant that does not fit the manager's `remaining`. A
+delegation that cannot fund its own worst case is refused up front, never
+discovered on the invoice.
 
 ```mermaid
 flowchart TD
@@ -128,7 +132,7 @@ flowchart TD
     EST --> FIT{"Fits remaining?"}
     FIT -- "yes" --> RUN["Reserve the worst case<br/>the provider call runs"]
     FIT -- "no" --> HALF{"Still holds half<br/>of the worst case?"}
-    HALF -- "yes" --> RELAX["One relaxed call<br/>reserve half, run it<br/>count the relaxation on the frame"]
+    HALF -- "yes" --> RELAX["Relaxed admission<br/>reserve half, run it<br/>counted on the frame"]
     HALF -- "no" --> DEFER["Fail closed — no provider call<br/>the turn ends with a zero-cost<br/>deferred message; the frame records<br/>a budget deferral"]
     RUN --> SETTLE["On return: settle the reservation<br/>against actual metered credits<br/>the unused remainder returns"]
     RELAX --> SETTLE
