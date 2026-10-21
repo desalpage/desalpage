@@ -1,12 +1,22 @@
 ---
 // Starlight Head override: the default head, plus JSON-LD structured data
-// on blog posts. The published date is derived from the entry id (the
-// `blog/YYYY-MM-DD-slug.mdx` filename convention) so the filename stays the
-// single source of truth for dates — the same rule rss.xml.js applies.
+// on blog posts and RSS auto-discovery on every page. The published date
+// is derived from the entry id (the `blog/YYYY-MM-DD-slug.mdx` filename
+// convention) so the filename stays the single source of truth for dates —
+// the same rule rss.xml.js applies.
 import DefaultHead from "@astrojs/starlight/components/Head.astro";
 
 const { entry } = Astro.locals.starlightRoute;
 const match = entry.id.match(/^blog\/(\d{4}-\d{2}-\d{2})-/);
+// The feed URL carries the configured `base` (astro.config.mjs), which
+// import.meta.env.BASE_URL provides; browsers and RSS readers discover
+// the feed from this tag on any page.
+const feedUrl = Astro.site
+  ? new URL(
+      `${import.meta.env.BASE_URL.replace(/\/+$/, "")}/rss.xml`,
+      Astro.site,
+    ).href
+  : undefined;
 let jsonLd: Record<string, unknown> | undefined;
 if (match && Astro.site) {
   const canonical = new URL(Astro.url.pathname, Astro.site);
@@ -31,6 +41,16 @@ if (match && Astro.site) {
 }
 ---
 <DefaultHead />
+{
+  feedUrl && (
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title="desalpage"
+      href={feedUrl}
+    />
+  )
+}
 {
   jsonLd && (
     <script

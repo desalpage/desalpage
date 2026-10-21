@@ -9,7 +9,9 @@ import { getCollection } from "astro:content";
 // `context.site` does not include it, and @astrojs/rss resolves a
 // `/`-rooted link against the `site` origin — which drops the base
 // path. Links must therefore be absolute URLs with the base included;
-// the channel link gets the same treatment.
+// the channel link gets the same treatment. The atom:link rel="self"
+// records the feed's own URL (the W3C feed validator's one
+// recommendation for this feed; some readers require it).
 const BASE = import.meta.env.BASE_URL.replace(/\/+$/, "");
 
 export async function GET(context) {
@@ -17,11 +19,15 @@ export async function GET(context) {
   const blog = docs.filter((page) =>
     /^blog\/\d{4}-\d{2}-\d{2}-/.test(page.id),
   );
+  const site = new URL(`${BASE}/`, context.site).href;
+  const feedUrl = new URL(`${BASE}/rss.xml`, context.site).href;
   return rss({
     title: "desalpage",
     description:
       "A governance substrate for recursive multi-agent work — budgets before delegation, deferrals instead of silence.",
-    site: new URL(`${BASE}/`, context.site).href,
+    site,
+    xmlns: { atom: "http://www.w3.org/2005/Atom" },
+    customData: `<atom:link href="${feedUrl}" rel="self" type="application/rss+xml"/>`,
     items: blog.map((page) => {
       const date = page.id.match(/^blog\/(\d{4}-\d{2}-\d{2})-/)[1];
       return {
