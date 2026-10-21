@@ -1,0 +1,42 @@
+---
+// Starlight Head override: the default head, plus JSON-LD structured data
+// on blog posts. The published date is derived from the entry id (the
+// `blog/YYYY-MM-DD-slug.mdx` filename convention) so the filename stays the
+// single source of truth for dates — the same rule rss.xml.js applies.
+import DefaultHead from "@astrojs/starlight/components/Head.astro";
+
+const { entry } = Astro.locals.starlightRoute;
+const match = entry.id.match(/^blog\/(\d{4}-\d{2}-\d{2})-/);
+let jsonLd: Record<string, unknown> | undefined;
+if (match && Astro.site) {
+  const canonical = new URL(Astro.url.pathname, Astro.site);
+  const author = {
+    "@type": "Organization",
+    name: "The desalpage Authors",
+    url: new URL(import.meta.env.BASE_URL, Astro.site).href,
+  };
+  jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: entry.data.title,
+    description: entry.data.description,
+    datePublished: match[1],
+    url: canonical.href,
+    mainEntityOfPage: canonical.href,
+    inLanguage: "en",
+    isAccessibleForFree: true,
+    author,
+    publisher: author,
+  };
+}
+---
+<DefaultHead />
+{
+  jsonLd && (
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify(jsonLd)}
+    />
+  )
+}

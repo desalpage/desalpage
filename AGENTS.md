@@ -10,9 +10,18 @@ applies; read it if it did not already load.
   GitHub Actions on push to `main`. Content sources live in
   `site/src/content/docs/`; blog entries follow the filename convention
   `YYYY-MM-DD-slug.mdx` — the date prefix orders the sidebar and the RSS
-  feed. Underscore-prefixed files are excluded from the build — but never
-  commit drafts: everything committed here is public. Stage drafts locally
-  or in the prototype; commit a post only when it is ready to publish.
+  feed and is the single source of truth for a post's date (the `Head`
+  override derives each page's JSON-LD `datePublished` from it).
+  Posts are documentation first: written to be read by humans and by AI
+  agents, each post opens with a status line (`date · type · evidence
+  status`), sets a dated sidebar label, and ends with a "How to cite"
+  line and the AI-agent authorship note linking About. Site prose is
+  drafted by AI agents under human direction — state this plainly;
+  About carries the canonical disclosure. Underscore-prefixed files are
+  excluded from the build, and Starlight's `draft: true` excludes a page
+  from production builds (visible in dev) — but never commit drafts:
+  everything committed here is public. Stage drafts locally or in the
+  prototype; commit a post only when it is ready to publish.
 - `papers/` — preprints and artifact bundles; papers appear here when
   released, never pre-announced.
 - `packages/` — released code artifacts: one-way snapshots from the

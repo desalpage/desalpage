@@ -20,6 +20,11 @@ export default defineConfig({
         { label: "About", link: "/about/" },
         { label: "Blog", autogenerate: { directory: "blog" } },
       ],
+      components: {
+        // The default head plus JSON-LD structured data on blog posts;
+        // the date is derived from the filename convention.
+        Head: "./src/components/Head.astro",
+      },
     }),
   ],
 });
