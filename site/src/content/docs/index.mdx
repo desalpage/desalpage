@@ -8,6 +8,34 @@ desalpage is a governance substrate for recursive multi-agent work: agents
 delegating down a reporting structure, one bounded sprint at a time —
 budgets reserved before delegation, deferrals instead of silence.
 
+## Mission
+
+The case for multi-agent work is public and measurable — and so is its
+cost. Performance scales with the number of agents you instantiate
+(["More Agents Is All You Need"](https://arxiv.org/abs/2402.05120)), and
+orchestrator–worker systems outperform single agents on breadth-first
+tasks ([Anthropic, "How we built our multi-agent research
+system"](https://www.anthropic.com/engineering/multi-agent-research-system)).
+Anthropic measures its multi-agent research system at roughly 15× the
+token spend of a chat interaction, and states the condition plainly: for
+economic viability, the value of the task must be high enough to pay for
+the increased performance.
+
+The swarm approach — spawn more agents whenever the answer is uncertain —
+presupposes infinite budget. Real work is bounded: every delegation spends
+real tokens, and when researchers annotated execution traces to ask why
+multi-agent systems fail ([MAST](https://arxiv.org/abs/2503.13657)), the
+failure modes were organizational: ambiguous task specifications, agents
+ignoring each other's input, premature termination — mirroring how human
+organizations fail.
+
+desalpage's premise is that the remedy is governance in the harness, not
+more prompting. A delegating agent reserves budget before the call, the
+reservation settles on return, and every outcome lands in the ledger or
+surfaces as a typed deferral — nothing silently truncated. Bounded
+autonomy turns recursive delegation from a reflex into a priced decision
+— the only form of it that stays affordable on a metered budget.
+
 ## Status
 
 desalpage is developed as a private prototype; this repository is its
