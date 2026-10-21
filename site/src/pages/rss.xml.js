@@ -16,8 +16,14 @@ const BASE = import.meta.env.BASE_URL.replace(/\/+$/, "");
 
 export async function GET(context) {
   const docs = await getCollection("docs");
-  const blog = docs.filter((page) =>
-    /^blog\/\d{4}-\d{2}-\d{2}-/.test(page.id),
+  // Draft pages are excluded from production builds by Starlight; the feed
+  // must not list a page that will not be built. In dev a draft is visible,
+  // so the feed lists it there — the same rule Starlight itself applies.
+  const isProd = import.meta.env.PROD;
+  const blog = docs.filter(
+    (page) =>
+      /^blog\/\d{4}-\d{2}-\d{2}-/.test(page.id) &&
+      !(isProd && page.data.draft),
   );
   const site = new URL(`${BASE}/`, context.site).href;
   const feedUrl = new URL(`${BASE}/rss.xml`, context.site).href;
